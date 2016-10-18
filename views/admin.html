@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+   <head>
+       <meta charset="utf-8">
+       <title>管理</title>
+       <style type="text/css">
+           input{
+            padding:5px;
+            font-size: 18px;
+            width: 40px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin: 0 3px
+
+           }
+           button{
+              padding:5px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: #fff
+           }
+           li  {
+            list-style-type: none;
+            float: left;
+            width: 300px;
+            margin: 5px
+           }
+           strong{
+            display: inline-block;
+            width: 80px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+            padding-right: 10px
+           }
+       </style>
+   </head>
+   <body style="height: 100%; margin: 0">
+   <h1 align="center">实时数据管理</h1>
+   <p align="center">＊快速查找城市请按CTRL＋F  <a href="javascript:void(0)" id="clearBtn">数据清零</a> </p>
+   <hr>
+       <div id="container" style="height: 100%">
+           
+       </div>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+var dom = document.getElementById("container");
+var ul =document.createElement('ul');
+var data = [];
+
+/******** 请求数据文件 ********/
+  ajax('/city.json',function(data){
+    createView(JSON.parse(data))
+    bindEvt()
+  })
+/******** 创建管理操作视图 ********/
+function createView(data){
+
+    for(var k in data){
+
+        var li =document.createElement('li');
+            li.innerHTML = '<strong>'+data[k].name+'</strong>'+'<button class="reduceBtn">-</button><input type="text" readOnly="true" id="'+ data[k].name+'" value="'+data[k].value+'" ><button class="addBtn">+</button>';
+
+        // var input = document.createElement('input')
+        //     input.type = 'number';
+        //     input.id = data[k].name;
+        //     input.value = data[k].value;
+        //     li.appendChild(input);
+        ul.appendChild(li)
+    }
+    dom.appendChild(ul)
+
+}
+
+/********辅助函数 简单ajax********/
+
+
+
+
+function ajax(url,callback){
+var xmlhttp;
+if (window.XMLHttpRequest)
+  {
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    callback.call(this,xmlhttp.responseText)
+    }
+  }
+xmlhttp.open("GET",url,true);
+xmlhttp.send();
+}
+
+
+/****事件绑定***/
+var socket = io();
+var clearBtn= document.getElementById('clearBtn');
+ clearBtn.onclick=function(){
+    socket.emit('clearData');
+    window.location.reload()
+  }
+
+function bindEvt(){
+  var addBtn=   document.querySelectorAll('.addBtn');
+  var reduceBtn=   document.querySelectorAll('.reduceBtn');
+
+  for (var i = addBtn.length - 1; i >= 0; i--) {
+      addBtn[i].onclick  = function(){
+      var input = this.parentNode.childNodes[2];
+      console.log(input)
+       var val =input.value,name=input.id
+              input.value = parseInt(val) + 1
+
+         socket.emit('add', {name: name, value: input.value});
+      }
+  }
+
+   for (var i = reduceBtn.length - 1; i >= 0; i--) {
+      reduceBtn[i].onclick  = function(){
+      var input = this.parentNode.childNodes[2]
+      console.log(input);
+       var val =input.value,name=input.id
+       if(val<=0){
+        return 
+       }
+
+       input.value = parseInt(val) - 1
+         socket.emit('reduce', {name: name, value: input.value });
+      }
+  }
+
+
+}
+
+
+</script>
+
+<script>
+
+
+</script>
+   </body>
+</html>
