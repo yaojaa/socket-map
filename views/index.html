@@ -252,14 +252,16 @@ var convertData = function (data) {
 };
 
 option = {
-    backgroundColor: '#404a59',
+    backgroundColor: '#042132',
     title: {
         text: '火伴生态家 现场签约  点亮中国 ',
         subtext: '点击进入数据管理',
         sublink: '/admin.html',
         left: 'center',
+        top:'50',
         textStyle: {
-            color: '#fff'
+            color: '#ccc',
+            fontSize:'28'
         }
     },
       tooltip: {
@@ -283,7 +285,7 @@ option = {
         roam: true,
         itemStyle: {
             normal: {
-                areaColor: '#323c48',
+                areaColor: '#07324e',
                 borderColor: '#111'
             },
             emphasis: {
@@ -298,7 +300,7 @@ option = {
             coordinateSystem: 'geo',
             data: convertData(data),
             symbolSize: function (val) {
-                var k =val[2]>10? 10 : val[2]*2
+                var k =val[2]>10? 10 : val[2]*5
                 return k
             },
             showEffectOn: 'render',
@@ -311,14 +313,14 @@ option = {
             label: {
                 normal: {
                     textStyle: {
-                    color: '#ccc',
+                    color: '#999',
                     fontStyle: 'normal',
                     fontWeight: 'normal',
                     fontFamily: 'sans-serif',
                     fontSize: 12,
                     },
                     formatter: function (params) {
-                        return ' ' +params.name + params.value[2] 
+                        return ' ' +params.name +' +'+ params.value[2] 
                     },
                     position: 'right',
                     show: true
@@ -361,7 +363,7 @@ function animateIn(dataItem){
         text.removeEventListener('animationend',aniEndHandle,true)
    }
    text.addEventListener('animationend',aniEndHandle,true)
-   text.innerHTML = dataItem.name + '+ 1' ;
+   text.innerHTML = dataItem.name + '成功签约1家皇冠代理商' ;
 
 
 }
@@ -392,8 +394,7 @@ function updateView(dataItem){
 //读取城市数据初始化地图
  ajax('/city.json',function(res){
    data = JSON.parse(res);
-   myChart = echarts.init(dom);
-
+   myChart = echarts.init(dom,'shine');
    if (option && typeof option === "object") {
   
     myChart.setOption(option, true);
